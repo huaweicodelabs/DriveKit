@@ -23,7 +23,7 @@
             tools:layout_editor_absoluteX="0dp"
             android:text="tips here"
             android:textAlignment="center"
-            android:layout_marginTop="830dp" />
+            android:layout_marginTop="930dp" />
 
         <Button
             android:id="@+id/buttonLogin"
@@ -56,7 +56,7 @@
             android:id="@+id/buttonDownloadFiles"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="370dp"
+            android:layout_marginTop="372dp"
             android:text="DOWNLOAD THE FILE"
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_editor_absoluteX="0dp" />
@@ -97,9 +97,18 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_editor_absoluteX="0dp" />
 
+        <Button
+            android:id="@+id/buttonQueryHistoryVersion"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="830dp"
+            android:text="List HistoryVersion"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="0dp" />
+
         <EditText
             android:id="@+id/uploadFileName"
-            android:layout_width="fill_parent"
+            android:layout_width="230dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="96dp"
             android:hint="Enter the file name in SD card"
@@ -111,7 +120,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="200dp"
-            android:hint="Enter file's name for query and download"
+            android:hint="Enter file's name for query,download and share"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -159,6 +168,24 @@
             android:text="reply list"
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_editor_absoluteX="0dp" />
+
+        <TextView
+            android:id="@+id/historyVersionList"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="880dp"
+            android:text="historyVersion list"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="0dp" />
+
+        <CheckBox
+            android:id="@+id/isApplicationData"
+            android:layout_width="139dp"
+            android:layout_height="58dp"
+            android:layout_marginLeft="16dp"
+            android:text="applicationData"
+            app:layout_constraintBaseline_toBaselineOf="@+id/uploadFileName"
+            app:layout_constraintLeft_toRightOf="@+id/uploadFileName" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

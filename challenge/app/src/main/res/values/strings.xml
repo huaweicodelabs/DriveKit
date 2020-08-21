@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">My Drive</string>
+    <string name="action_download">download</string>
+</resources>

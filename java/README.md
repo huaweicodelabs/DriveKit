@@ -1,4 +1,4 @@
-## drivekit-java-sample
+# drivekit-java-sample
 
 
 ## Table of Contents
@@ -8,6 +8,7 @@
  * [Configuration ](#configuration )
  * [Supported Environments](#supported-environments)
  * [Sample Code](#Sample-Code)
+ * [Result](#result)
  * [License](#license)
 
 
@@ -30,7 +31,7 @@
     Android Studio 3.2 version or a later version is recommended.
 
 ## Configuration
-    To use functions provided by packages in examples, you need to set related parameters in pushcommon.go in the common package.
+    To use functions provided by packages in examples, you need to set related parameters in build.gradle and agconnect-services.json in the app package.
     The following describes parameters in build.gradle and agconnect-services.json
 
     appId:         App ID, which is obtained from app information.
@@ -39,6 +40,10 @@
 ## Sample Code
     Currently, the core capabilities of Drive Kit include uploading, downloading, deleting, trashing, and searching for files in Drive as well as querying and monitoring file changes.
     1. Obtain parameters in the Main function of each Java file in advance. For example, obtain the AT through the HMS SDK.
+
+## Result
+   <img src="images/result_1.jpg" width = 30% height = 30%>
+   <img src="images/result_2.jpg" width = 30% height = 30%>
 
 ##  License
     DriveKit SDK Codelab sample is licensed under the [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0).

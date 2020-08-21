@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +39,7 @@ import com.huawei.cloud.services.drive.model.Comment;
 import com.huawei.cloud.services.drive.model.CommentList;
 import com.huawei.cloud.services.drive.model.File;
 import com.huawei.cloud.services.drive.model.FileList;
+import com.huawei.cloud.services.drive.model.HistoryVersionList;
 import com.huawei.cloud.services.drive.model.Reply;
 import com.huawei.cloud.services.drive.model.ReplyList;
 import com.huawei.hmf.tasks.Task;
@@ -81,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Comment mComment;
     private Reply mReply;
 
+    private CheckBox isApplicationData;
     private EditText uploadFileName;
     private EditText searchFileName;
     private EditText commentText;
@@ -88,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView queryResult;
     private TextView commentList;
     private TextView replyList;
+    private TextView historyVersionList;
 
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -127,11 +131,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         uploadFileName = findViewById(R.id.uploadFileName);
         searchFileName = findViewById(R.id.searchFileName);
+        isApplicationData = findViewById(R.id.isApplicationData);
         queryResult = findViewById(R.id.queryResult);
         commentList = findViewById(R.id.commentList);
         replyList = findViewById(R.id.replyList);
         commentText = findViewById(R.id.commentText);
         replyText = findViewById(R.id.replyText);
+        historyVersionList = findViewById(R.id.historyVersionList);
         findViewById(R.id.buttonLogin).setOnClickListener(this);
         findViewById(R.id.buttonUploadFiles).setOnClickListener(this);
         findViewById(R.id.buttonQueryFiles).setOnClickListener(this);
@@ -140,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.buttonQueryComment).setOnClickListener(this);
         findViewById(R.id.buttonCreateReply).setOnClickListener(this);
         findViewById(R.id.buttonQueryReply).setOnClickListener(this);
+        findViewById(R.id.buttonQueryHistoryVersion).setOnClickListener(this);
     }
 
     @Override
@@ -211,6 +218,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.buttonQueryReply:
                 queryReply();
                 break;
+            case R.id.buttonQueryHistoryVersion:
+                queryHistoryVersion();
             default:
                 break;
         }
@@ -262,6 +271,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     file.setFileName("somepath" + System.currentTimeMillis())
                             .setMimeType("application/vnd.huawei-apps.folder")
                             .setAppSettings(appProperties);
+                    if (isApplicationData.isChecked()) {
+                        file.setParentFolder(Collections.singletonList("applicationData"));
+                    }
                     directoryCreated = drive.files().create(file).execute();
                     // create test.jpg on cloud
                     String mimeType = mimeType(fileObject);
@@ -295,7 +307,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         showTips("please input file name above.");
                         return;
                     }
+                    String containers = "";
                     String queryFile = "fileName = '" + searchFileName.getText() + "' and mimeType != 'application/vnd.huawei-apps.folder'";
+                    if (isApplicationData.isChecked()) {
+                        containers = "applicationData";
+                        queryFile = "'applicationData' in parentFolder and ".concat(queryFile);
+                    }
                     Drive drive = buildDrive();
                     Drive.Files.List request = drive.files().list();
                     FileList files;
@@ -304,7 +321,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 .setQueryParam(queryFile)
                                 .setPageSize(10)
                                 .setOrderBy("fileName")
-                                .setFields("category,nextCursor,files/id,files/fileName,files/size")
+                                .setFields("category,nextCursor,files(id,fileName,size)")
+                                .setContainers(containers)
                                 .execute();
                         if (files == null || files.getFiles().size() > 0) {
                             break;
@@ -424,7 +442,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Drive drive = buildDrive();
                     CommentList response = drive.comments()
                             .list(fileSearched.getId())
-                            .setFields("comments/id,comments/description,comments/replies/description")
+                            .setFields("comments(id,description,replies(description))")
                             .execute();
 
                     final String text = response.getComments().toString();
@@ -506,7 +524,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Drive drive = buildDrive();
                     ReplyList response = drive.replies()
                             .list(fileSearched.getId(), mComment.getId())
-                            .setFields("replies/id,replies/description")
+                            .setFields("replies(id,description)")
                             .execute();
 
                     final String text = response.getReplies().toString();
@@ -519,6 +537,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } catch (Exception ex) {
                     Log.d(TAG, "query reply error " + ex.toString());
                     showTips("query reply error");
+                }
+            }
+        }).start();
+    }
+
+    private void queryHistoryVersion() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (accessToken == null) {
+                        showTips("please click 'Login'.");
+                        return;
+                    }
+                    if (fileSearched == null) {
+                        showTips("please click 'QUERY FILE'.");
+                        return;
+                    }
+                    Drive drive = buildDrive();
+                    HistoryVersionList response = drive.historyVersions()
+                            .list(fileSearched.getId())
+                            .setFields("historyVersions(id,sha256)")
+                            .execute();
+
+                    final String text = response.getHistoryVersions().toString();
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            historyVersionList.setText(text);
+                        }
+                    });
+                } catch (Exception ex) {
+                    Log.d(TAG, "query historyVersion", ex);
+                    showTips("query historyVersion error");
                 }
             }
         }).start();
